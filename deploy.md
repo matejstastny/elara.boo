@@ -40,11 +40,17 @@ rm /tmp/cloudflared
 cloudflared --version
 ```
 
-6. From the dotfiles checkout, install `pi/services/thebe/elara-boo-tunnel.initd` as
-   `/etc/init.d/elara-boo-tunnel`, then create the root-only service configuration:
+6. Copy `pi/services/thebe/elara-boo-tunnel.initd` from the dotfiles checkout to thebe, then install
+   it as `/etc/init.d/elara-boo-tunnel`:
 
 ```sh
-sudo install -o root -g root -m 755 pi/services/thebe/elara-boo-tunnel.initd /etc/init.d/elara-boo-tunnel
+scp pi/services/thebe/elara-boo-tunnel.initd thebe:/home/elara/elara-boo-tunnel.initd
+ssh thebe sudo install -o root -g root -m 755 /home/elara/elara-boo-tunnel.initd /etc/init.d/elara-boo-tunnel
+```
+
+On thebe, create the root-only service configuration:
+
+```sh
 sudo sh -c 'umask 077; cat > /etc/conf.d/elara-boo-tunnel'
 ```
 
