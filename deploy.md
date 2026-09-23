@@ -30,6 +30,19 @@ hostname and origin mapping, while thebe keeps only a single revocable tunnel to
     - hostname: `elara.boo`
     - service type: `HTTP`
     - URL: `http://localhost:8081`
+
+    This is the remotely managed equivalent of the Dashboard project's
+    `cloudflared tunnel route dns <tunnel> <hostname>` command. It creates the required proxied DNS
+    record automatically:
+
+    ```text
+    CNAME  @  <tunnel-uuid>.cfargotunnel.com
+    ```
+
+    For an apex domain, Cloudflare flattens that CNAME. Do not create a second, competing record if
+    the published-hostname form has already created it. If you add the record yourself, you still
+    need the published hostname so Cloudflare knows to send `elara.boo` to `http://localhost:8081`.
+
 5. Install the official ARM64 binary on thebe:
 
 ```sh
