@@ -40,27 +40,30 @@ rm /tmp/cloudflared
 cloudflared --version
 ```
 
-6. Copy `pi/services/thebe/elara-boo-tunnel.initd` from the dotfiles checkout to thebe, then install
-   it as `/etc/init.d/elara-boo-tunnel`:
+6. Copy both tunnel service files from the dotfiles checkout to thebe, then install them:
 
 ```sh
-scp pi/services/thebe/elara-boo-tunnel.initd thebe:/home/elara/elara-boo-tunnel.initd
+scp pi/services/thebe/elara-boo-tunnel{,.initd} thebe:/home/elara/
+ssh thebe sudo install -d -o root -g root -m 755 /usr/local/libexec
 ssh thebe sudo install -o root -g root -m 755 /home/elara/elara-boo-tunnel.initd /etc/init.d/elara-boo-tunnel
+ssh thebe sudo install -o root -g root -m 755 /home/elara/elara-boo-tunnel /usr/local/libexec/elara-boo-tunnel
 ```
 
 On thebe, create the root-only service configuration:
 
 ```sh
-sudo sh -c 'umask 077; cat > /etc/conf.d/elara-boo-tunnel'
+sudo install -d -o root -g root -m 700 /etc/cloudflared
+sudo sh -c 'umask 077; cat > /etc/cloudflared/elara-boo-tunnel.token'
 ```
 
 Paste this line into the second command, substituting the tunnel token, then press `Ctrl-D`:
 
 ```sh
-TUNNEL_TOKEN='paste-the-token-here'
+paste-the-token-here
 ```
 
-The token stays only in `/etc/conf.d/elara-boo-tunnel`, never in this repository.
+The token stays only in `/etc/cloudflared/elara-boo-tunnel.token`, never in this repository. The
+OpenRC service does not need read access to that file for a normal status check.
 
 7. Start it at boot and verify the connector:
 
