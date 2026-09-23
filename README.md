@@ -13,4 +13,4 @@ Run the same checks as CI with `pnpm check`. Build the static site with `pnpm bu
 
 Link content lives in `src/data/site.ts`; the homepage deliberately stays a single, fast static page.
 
-See [deployment notes](docs/deploy.md) for the thebe and Cloudflare Tunnel setup.
+See [deployment notes](deploy.md) for the thebe, Cloudflare Tunnel, and self-hosted runner setup.
