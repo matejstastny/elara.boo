@@ -30,9 +30,41 @@ hostname and origin mapping, while thebe keeps only a single revocable tunnel to
     - hostname: `elara.boo`
     - service type: `HTTP`
     - URL: `http://localhost:8081`
-5. Install `cloudflared` and register its OpenRC service on thebe using the token. The service must
-   run at boot and its token file must be readable only by root.
-6. Confirm the tunnel is healthy in Cloudflare, then check both origins:
+5. Install the official ARM64 binary on thebe:
+
+```sh
+curl -fsSL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64 \
+    -o /tmp/cloudflared
+sudo install -o root -g root -m 755 /tmp/cloudflared /usr/local/bin/cloudflared
+rm /tmp/cloudflared
+cloudflared --version
+```
+
+6. From the dotfiles checkout, install `pi/services/thebe/elara-boo-tunnel.initd` as
+   `/etc/init.d/elara-boo-tunnel`, then create the root-only service configuration:
+
+```sh
+sudo install -o root -g root -m 755 pi/services/thebe/elara-boo-tunnel.initd /etc/init.d/elara-boo-tunnel
+sudo sh -c 'umask 077; cat > /etc/conf.d/elara-boo-tunnel'
+```
+
+Paste this line into the second command, substituting the tunnel token, then press `Ctrl-D`:
+
+```sh
+TUNNEL_TOKEN='paste-the-token-here'
+```
+
+The token stays only in `/etc/conf.d/elara-boo-tunnel`, never in this repository.
+
+7. Start it at boot and verify the connector:
+
+```sh
+sudo rc-update add elara-boo-tunnel default
+sudo rc-service elara-boo-tunnel start
+sudo rc-service elara-boo-tunnel status
+```
+
+8. Confirm the tunnel is healthy in Cloudflare, then check both origins:
 
 ```sh
 curl -I http://127.0.0.1:8081
