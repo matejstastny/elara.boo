@@ -1,0 +1,306 @@
+---
+import { site } from "../data/site";
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout description={site.description} title={`${site.name} · elara.boo`}>
+    <main>
+        <div class="sky" aria-hidden="true">
+            <span class="star star-one"></span>
+            <span class="star star-two"></span>
+            <span class="star star-three"></span>
+            <span class="orbit"></span>
+        </div>
+        <div class="frame">
+            <header class="masthead">
+                <a class="wordmark" href="/" aria-label="elara.boo home">
+                    ✦ elara.boo
+                </a>
+                <p>midnight with stars</p>
+            </header>
+            <section class="intro" aria-labelledby="title">
+                <p class="eyebrow">hello, I’m</p>
+                <h1 id="title">{site.name}</h1>
+                <p class="lede">
+                    I make software, build robots, and care far too much about the little systems
+                    around a computer.
+                </p>
+            </section>
+            <section class="directory" aria-labelledby="directory-title">
+                <div class="section-heading">
+                    <h2 id="directory-title">around here</h2>
+                    <span aria-hidden="true">↗</span>
+                </div>
+                <ul>
+                    {site.links.map((link, index) => (
+                        <li>
+                            <a href={link.href} target="_blank" rel="noreferrer">
+                                <span class="link-index">{String(index + 1).padStart(2, "0")}</span>
+                                <span class="link-copy">
+                                    <strong>{link.label}</strong>
+                                    <span>{link.detail}</span>
+                                </span>
+                                <span class="link-arrow" aria-hidden="true">
+                                    ↗
+                                </span>
+                            </a>
+                        </li>
+                    ))}
+                </ul>
+            </section>
+            <footer>
+                <span>made somewhere under jupiter</span>
+                <span aria-hidden="true">✦</span>
+            </footer>
+        </div>
+    </main>
+</BaseLayout>
+<style>
+    main {
+        isolation: isolate;
+        min-height: 100vh;
+        overflow: hidden;
+        position: relative;
+    }
+    .sky,
+    .sky::before,
+    .sky::after {
+        inset: 0;
+        pointer-events: none;
+        position: absolute;
+    }
+    .sky {
+        background:
+            radial-gradient(circle at 79% 14%, rgb(120 120 200 / 13%), transparent 22rem),
+            radial-gradient(circle at 11% 91%, rgb(196 122 184 / 7%), transparent 24rem), #11111b;
+        z-index: -1;
+    }
+    .sky::before {
+        background-image: radial-gradient(#dce0f4 0.6px, transparent 0.8px);
+        background-position: 23px 41px;
+        background-size: 148px 148px;
+        content: "";
+        opacity: 0.26;
+    }
+    .sky::after {
+        background-image: radial-gradient(#7878c8 0.5px, transparent 0.8px);
+        background-position: 97px 12px;
+        background-size: 211px 211px;
+        content: "";
+        opacity: 0.28;
+    }
+    .star,
+    .orbit {
+        position: absolute;
+    }
+    .star {
+        background: #f0f0ff;
+        border-radius: 100%;
+        box-shadow: 0 0 18px 4px rgb(220 224 244 / 20%);
+        height: 3px;
+        width: 3px;
+    }
+    .star-one {
+        left: 13%;
+        top: 17%;
+    }
+    .star-two {
+        background: #c47ab8;
+        bottom: 15%;
+        height: 2px;
+        right: 12%;
+        width: 2px;
+    }
+    .star-three {
+        background: #7878c8;
+        height: 4px;
+        right: 28%;
+        top: 33%;
+        width: 4px;
+    }
+    .orbit {
+        border: 1px solid rgb(120 120 200 / 13%);
+        border-radius: 50%;
+        height: min(82vw, 920px);
+        right: -36vw;
+        top: -38vw;
+        transform: rotate(-25deg);
+        width: min(82vw, 920px);
+    }
+    .frame {
+        display: grid;
+        grid-template-columns: minmax(0, 0.94fr) minmax(360px, 0.76fr);
+        grid-template-rows: auto 1fr auto;
+        margin: 0 auto;
+        max-width: 1280px;
+        min-height: 100vh;
+        padding: 28px clamp(24px, 6vw, 76px) 24px;
+    }
+    .masthead {
+        align-items: center;
+        border-bottom: 1px solid #25253a;
+        display: flex;
+        grid-column: 1 / -1;
+        justify-content: space-between;
+        padding-bottom: 20px;
+    }
+    .wordmark {
+        color: #7878c8;
+        font-size: 0.86rem;
+        font-weight: 650;
+        letter-spacing: 0.09em;
+        text-decoration: none;
+    }
+    .masthead p,
+    .eyebrow,
+    footer,
+    .section-heading {
+        color: #9898c0;
+        font-size: 0.69rem;
+        letter-spacing: 0.12em;
+        text-transform: lowercase;
+    }
+    .masthead p {
+        margin: 0;
+    }
+    .intro {
+        align-self: center;
+        max-width: 590px;
+        padding: clamp(84px, 17vh, 172px) clamp(32px, 8vw, 120px) clamp(84px, 13vh, 128px) 0;
+    }
+    .eyebrow {
+        color: #c47ab8;
+        margin: 0 0 14px;
+    }
+    h1 {
+        color: #f0f0ff;
+        font-size: clamp(2.65rem, 6.6vw, 6.35rem);
+        font-weight: 500;
+        letter-spacing: -0.095em;
+        line-height: 0.92;
+        margin: 0;
+    }
+    .lede {
+        color: #dce0f4;
+        font-size: clamp(0.95rem, 1.4vw, 1.12rem);
+        letter-spacing: -0.035em;
+        line-height: 1.7;
+        margin: 34px 0 0;
+        max-width: 39ch;
+    }
+    .directory {
+        align-self: center;
+        border-left: 1px solid #25253a;
+        padding: clamp(48px, 9vw, 110px) 0 clamp(48px, 9vw, 110px) clamp(32px, 6vw, 84px);
+    }
+    .section-heading {
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+    }
+    h2 {
+        font: inherit;
+        margin: 0;
+    }
+    ul {
+        border-top: 1px solid #25253a;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+    li {
+        border-bottom: 1px solid #25253a;
+    }
+    li a {
+        align-items: center;
+        display: grid;
+        gap: 16px;
+        grid-template-columns: 2.5rem 1fr auto;
+        min-height: 94px;
+        padding: 16px 0;
+        text-decoration: none;
+        transition: padding 180ms cubic-bezier(0.05, 0.7, 0.1, 1);
+    }
+    li a:hover {
+        padding-left: 10px;
+    }
+    li a:hover strong,
+    li a:focus-visible strong {
+        color: #c47ab8;
+    }
+    .link-index,
+    .link-arrow {
+        color: #7878c8;
+        font-size: 0.72rem;
+    }
+    .link-copy {
+        display: grid;
+        gap: 5px;
+    }
+    strong {
+        color: #dce0f4;
+        font-size: 0.91rem;
+        font-weight: 500;
+        letter-spacing: -0.025em;
+        transition: color 180ms ease;
+    }
+    .link-copy span {
+        color: #9898c0;
+        font-size: 0.72rem;
+        letter-spacing: -0.025em;
+        line-height: 1.45;
+    }
+    footer {
+        align-items: end;
+        border-top: 1px solid #25253a;
+        display: flex;
+        grid-column: 1 / -1;
+        justify-content: space-between;
+        padding-top: 20px;
+    }
+    footer span:last-child {
+        color: #c47ab8;
+        font-size: 0.9rem;
+    }
+    @media (max-width: 720px) {
+        .frame {
+            display: flex;
+            flex-direction: column;
+            padding: 22px 24px;
+        }
+        .masthead {
+            flex: 0 0 auto;
+            padding-bottom: 17px;
+        }
+        .masthead p {
+            display: none;
+        }
+        .intro {
+            flex: 1;
+            padding: 84px 0 74px;
+        }
+        .directory {
+            border-left: 0;
+            border-top: 1px solid #25253a;
+            padding: 25px 0 60px;
+        }
+        li a {
+            min-height: 82px;
+        }
+        .orbit {
+            height: 700px;
+            right: -430px;
+            top: -240px;
+            width: 700px;
+        }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            scroll-behavior: auto !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+</style>

@@ -1,0 +1,62 @@
+---
+interface Props {
+    description?: string;
+    title?: string;
+}
+const {
+    description = "Software, robotics, and small systems with a point of view.",
+    title = "elara.boo",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <meta name="description" content={description} />
+        <meta name="theme-color" content="#11111b" />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:type" content="website" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <title>{title}</title>
+    </head>
+    <body>
+        <slot />
+    </body>
+</html>
+<style is:global>
+    :root {
+        color-scheme: dark;
+        font-family:
+            "Maple Mono NF", "Maple Mono", ui-monospace, "Cascadia Code", "SFMono-Regular", Menlo,
+            Consolas, monospace;
+        background: #11111b;
+        color: #dce0f4;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+    }
+    * {
+        box-sizing: border-box;
+    }
+    html {
+        min-width: 320px;
+        background: #11111b;
+    }
+    body {
+        min-height: 100vh;
+        margin: 0;
+    }
+    ::selection {
+        background: #7878c8;
+        color: #11111b;
+    }
+    a {
+        color: inherit;
+    }
+    :focus-visible {
+        outline: 2px solid #c47ab8;
+        outline-offset: 4px;
+    }
+</style>
