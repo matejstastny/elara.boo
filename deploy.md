@@ -19,31 +19,28 @@ sudo rc-service caddy reload
 
 ## Cloudflare Tunnel
 
-Use a remotely managed named tunnel. It is the cleanest fit here because Cloudflare stores the
-hostname and origin mapping, while thebe keeps only a single revocable tunnel token.
+Use a locally managed named tunnel. Its configuration and credentials live on thebe, matching the
+other TrickFire deployments and making the DNS route an explicit `cloudflared` command.
 
 1. Add `elara.boo` to Cloudflare and change the nameservers at your domain registrar to the two
    nameservers Cloudflare gives you. Wait until the zone shows **Active**.
-2. In Cloudflare Zero Trust, open **Networks → Tunnels** and create `thebe-elara-boo`.
-3. Add a Linux connector, then copy its token without saving it in a shell history or this repo.
-4. In the tunnel's **Routes** tab, add a published application:
-    - hostname: `elara.boo`
-    - service type: `HTTP`
-    - URL: `http://localhost:8081`
+2. On thebe, authenticate and choose the `elara.boo` zone in the browser:
 
-    This is the remotely managed equivalent of the Dashboard project's
-    `cloudflared tunnel route dns <tunnel> <hostname>` command. It creates the required proxied DNS
-    record automatically:
+```sh
+cloudflared tunnel login
+```
 
-    ```text
-    CNAME  @  <tunnel-uuid>.cfargotunnel.com
-    ```
+This saves `/home/elara/.cloudflared/cert.pem`. Keep it private.
 
-    For an apex domain, Cloudflare flattens that CNAME. Do not create a second, competing record if
-    the published-hostname form has already created it. If you add the record yourself, you still
-    need the published hostname so Cloudflare knows to send `elara.boo` to `http://localhost:8081`.
+3. Create the named tunnel and note the UUID printed by the command:
 
-5. Install the official ARM64 binary on thebe:
+```sh
+cloudflared tunnel create thebe-elara-boo
+```
+
+It creates `/home/elara/.cloudflared/<tunnel-uuid>.json`, which is the connector credential.
+
+4. Install the official ARM64 binary on thebe:
 
 ```sh
 curl -fsSL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64 \
@@ -53,32 +50,34 @@ rm /tmp/cloudflared
 cloudflared --version
 ```
 
-6. Copy both tunnel service files from the dotfiles checkout to thebe, then install them:
-
-```sh
-scp pi/services/thebe/elara-boo-tunnel{,.initd} thebe:/home/elara/
-ssh thebe sudo install -d -o root -g root -m 755 /usr/local/libexec
-ssh thebe sudo install -o root -g root -m 755 /home/elara/elara-boo-tunnel.initd /etc/init.d/elara-boo-tunnel
-ssh thebe sudo install -o root -g root -m 755 /home/elara/elara-boo-tunnel /usr/local/libexec/elara-boo-tunnel
-```
-
-On thebe, create the root-only service configuration:
+5. Create the root-owned tunnel configuration, substituting the UUID from the creation command:
 
 ```sh
 sudo install -d -o root -g root -m 700 /etc/cloudflared
-sudo sh -c 'umask 077; cat > /etc/cloudflared/elara-boo-tunnel.token'
+sudo sh -c 'cat > /etc/cloudflared/elara-boo.yml' <<'EOF'
+tunnel: <tunnel-uuid>
+credentials-file: /home/elara/.cloudflared/<tunnel-uuid>.json
+ingress:
+  - hostname: elara.boo
+    service: http://127.0.0.1:8081
+  - service: http_status:404
+EOF
 ```
 
-Paste this line into the second command, substituting the tunnel token, then press `Ctrl-D`:
+6. Create the DNS route. This adds the proxied CNAME record, which Cloudflare flattens at the apex:
 
 ```sh
-paste-the-token-here
+cloudflared tunnel route dns thebe-elara-boo elara.boo
 ```
 
-The token stays only in `/etc/cloudflared/elara-boo-tunnel.token`, never in this repository. The
-OpenRC service does not need read access to that file for a normal status check.
+7. Copy the tunnel service file from the dotfiles checkout to thebe, then install it:
 
-7. Start it at boot and verify the connector:
+```sh
+scp pi/services/thebe/elara-boo-tunnel.initd thebe:/home/elara/
+ssh thebe sudo install -o root -g root -m 755 /home/elara/elara-boo-tunnel.initd /etc/init.d/elara-boo-tunnel
+```
+
+8. Start it at boot and verify the connector:
 
 ```sh
 sudo rc-update add elara-boo-tunnel default
@@ -86,15 +85,15 @@ sudo rc-service elara-boo-tunnel start
 sudo rc-service elara-boo-tunnel status
 ```
 
-8. Confirm the tunnel is healthy in Cloudflare, then check both origins:
+9. Confirm the tunnel is healthy in Cloudflare, then check both origins:
 
 ```sh
 curl -I http://127.0.0.1:8081
 curl -I https://elara.boo
 ```
 
-Cloudflare creates the required DNS record when you publish the hostname and terminates public TLS.
-Caddy deliberately has no public listener or certificate for this site.
+Cloudflare terminates public TLS. Caddy deliberately has no public listener or certificate for this
+site.
 
 ## Routine deployments
 
