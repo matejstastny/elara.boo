@@ -1,0 +1,102 @@
+---
+import { tech } from "../data/tech";
+import { techGroups } from "../data/site";
+
+const bySlug = new Map(tech.map((t) => [t.slug, t]));
+---
+
+<div class="tech">
+    {techGroups.map((group) => (
+        <div class="tech-row">
+            <p class="label tech-label">{group.label}</p>
+            <ul>
+                {group.slugs.map((slug) => {
+                    const mark = bySlug.get(slug);
+                    return (
+                        mark && (
+                            <li>
+                                <span class="tech-mark" title={mark.label}>
+                                    <svg
+                                        aria-hidden="true"
+                                        fill="currentColor"
+                                        focusable="false"
+                                        height="16"
+                                        viewBox="0 0 24 24"
+                                        width="16"
+                                        set:html={`<path d="${mark.d}"/>`}
+                                    />
+                                    <span class="tech-name">{mark.label}</span>
+                                </span>
+                            </li>
+                        )
+                    );
+                })}
+            </ul>
+        </div>
+    ))}
+</div>
+
+<style>
+    .tech {
+        display: grid;
+        gap: 12px;
+    }
+
+    .tech-row {
+        align-items: baseline;
+        display: grid;
+        gap: 6px 18px;
+        grid-template-columns: 5.6rem minmax(0, 1fr);
+    }
+
+    .tech-label {
+        font-size: 0.6rem;
+    }
+
+    ul {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 14px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* the label rides along under the mark, so the strip reads without hovering */
+    .tech-mark {
+        align-items: center;
+        color: var(--dim);
+        display: inline-flex;
+        gap: 6px;
+        transition: color 180ms ease;
+    }
+
+    .tech-mark:hover {
+        color: var(--purple);
+    }
+
+    .tech-mark svg {
+        flex: none;
+    }
+
+    .tech-name {
+        font-size: 0.66rem;
+        letter-spacing: 0.01em;
+        white-space: nowrap;
+    }
+
+    @media (max-width: 720px) {
+        .tech-row {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 5px;
+        }
+
+        ul {
+            gap: 5px 12px;
+        }
+
+        .tech-name {
+            font-size: 0.62rem;
+        }
+    }
+</style>

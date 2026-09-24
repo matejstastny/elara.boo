@@ -1,0 +1,276 @@
+---
+import Gallery from "./Gallery.astro";
+import Icon from "./Icon.astro";
+import { trickfire } from "../data/site";
+---
+
+<div class="tf">
+    <header class="tf-head">
+        <div class="tf-title">
+            <img alt="" class="tf-mark" height="128" src={trickfire.mark} width="69" />
+            <h3>
+                <a class="tlink" href={trickfire.site} rel="noreferrer" target="_blank">
+                    {trickfire.org}
+                </a>
+            </h3>
+            <p class="tf-role">{trickfire.role}</p>
+        </div>
+        <p class="tf-blurb">
+            A student-led team at UW Bothell, headed for the{" "}
+            <a class="tlink" href={trickfire.competitionHref} rel="noreferrer" target="_blank">
+                {trickfire.competition}
+            </a>{" "}
+            - four missions on a Mars analogue, every part of the rover designed and built by
+            students. I lead simulation, and I look after the software and infrastructure the rest
+            of the team leans on. Most of my time goes here.
+        </p>
+
+        <figure class="tf-photo">
+            <img
+                alt={trickfire.photo.alt}
+                decoding="async"
+                height="933"
+                loading="lazy"
+                sizes="(max-width: 900px) 92vw, 720px"
+                src={trickfire.photo.src}
+                srcset={trickfire.photo.srcset}
+                width="1400"
+            />
+            <svg
+                aria-label="Hand-drawn arrow pointing to me"
+                class="tf-photo-note"
+                role="img"
+                viewBox="0 0 1400 933"
+            >
+                <path class="tf-photo-arrow" d="M106 123C143 170 203 202 272 282" />
+                <path class="tf-photo-arrow-head" d="M272 282l-34-10m34 10-11-33" />
+                <text class="tf-photo-label" x="57" y="108">
+                    me
+                </text>
+            </svg>
+            <figcaption>{trickfire.photo.caption}</figcaption>
+        </figure>
+    </header>
+
+    <ol class="tf-work">
+        {trickfire.work.map((w) => (
+            <li class="w">
+                <span class="w-mark" aria-hidden="true">
+                    <Icon name={w.icon} size={19} stroke={1.35} />
+                </span>
+                <div class="w-body">
+                    <h4 class="w-name">
+                        {w.href ? (
+                            <a class="tlink" href={w.href} rel="noreferrer" target="_blank">
+                                {w.name}
+                            </a>
+                        ) : (
+                            w.name
+                        )}
+                    </h4>
+                    <p class="w-text">{w.body}</p>
+                    {"link" in w && (
+                        <p class="w-link">
+                            <a class="tlink" href={w.link.href} rel="noreferrer" target="_blank">
+                                {w.link.label}
+                            </a>
+                            <Icon name="arrow" size={11} stroke={1.7} />
+                        </p>
+                    )}
+                    <ul class="tags">
+                        {w.tags.map((t) => (
+                            <li class="tag">{t}</li>
+                        ))}
+                    </ul>
+                    {"shots" in w && <Gallery shots={w.shots} />}
+                </div>
+            </li>
+        ))}
+    </ol>
+</div>
+
+<style>
+    .tf {
+        display: grid;
+        gap: clamp(26px, 4vw, 40px);
+    }
+
+    .tf-head {
+        display: grid;
+        gap: 16px;
+    }
+
+    .tf-title {
+        align-items: center;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 14px;
+    }
+
+    /* their mark, not mine, so it keeps its own green */
+    .tf-mark {
+        flex: none;
+        height: 30px;
+        width: auto;
+    }
+
+    .tf-title h3 {
+        color: var(--bright);
+        font-size: clamp(1.15rem, 1rem + 0.7vw, 1.6rem);
+        font-weight: 600;
+        letter-spacing: -0.035em;
+        margin: 0;
+    }
+
+    .tf-role {
+        align-items: center;
+        color: var(--rose);
+        display: flex;
+        flex-wrap: wrap;
+        font-size: 0.76rem;
+        gap: 10px;
+        letter-spacing: 0.01em;
+        margin: 5px 0 0;
+    }
+
+    .tf-photo {
+        margin: 0;
+        position: relative;
+    }
+
+    .tf-photo img {
+        border: 1px solid var(--overlay);
+        border-radius: 4px;
+        display: block;
+        height: auto;
+        width: 100%;
+    }
+
+    .tf-photo {
+        max-width: 720px;
+    }
+
+    .tf-photo figcaption {
+        color: var(--dim);
+        font-size: 0.64rem;
+        letter-spacing: 0.06em;
+        padding-top: 10px;
+    }
+
+    .tf-photo-note {
+        color: var(--rose);
+        height: auto;
+        left: 0;
+        overflow: visible;
+        pointer-events: none;
+        position: absolute;
+        top: 0;
+        width: 100%;
+        z-index: 1;
+    }
+
+    .tf-photo-arrow,
+    .tf-photo-arrow-head {
+        fill: none;
+        stroke: currentColor;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .tf-photo-arrow {
+        stroke-width: 8;
+    }
+
+    .tf-photo-arrow-head {
+        stroke-width: 9;
+    }
+
+    .tf-photo-label {
+        fill: currentColor;
+        font-family: cursive;
+        font-size: 56px;
+        font-weight: 700;
+        letter-spacing: -0.08em;
+        transform: rotate(-8deg);
+        transform-origin: 57px 108px;
+    }
+
+    .tf-blurb {
+        color: var(--text);
+        font-size: 0.82rem;
+        line-height: 1.75;
+        margin: 0;
+        max-width: 66ch;
+    }
+
+    /* ---------- the four pieces of work ---------- */
+
+    .tf-work {
+        border-top: var(--rule);
+        display: grid;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .w {
+        border-bottom: var(--rule);
+        display: grid;
+        gap: 0 clamp(14px, 2vw, 22px);
+        grid-template-columns: 34px minmax(0, 1fr);
+        padding: 20px 0 22px;
+    }
+
+    .w-mark {
+        align-items: center;
+        border: 1px solid var(--overlay);
+        border-radius: 3px;
+        color: var(--purple);
+        display: flex;
+        height: 32px;
+        justify-content: center;
+        width: 32px;
+    }
+
+    .w-body {
+        display: grid;
+        gap: 8px;
+        min-width: 0;
+    }
+
+    .w-name {
+        color: var(--bright);
+        font-size: 0.9rem;
+        font-weight: 600;
+        letter-spacing: -0.015em;
+        margin: 0;
+    }
+
+    .w-text {
+        color: var(--text);
+        font-size: 0.78rem;
+        line-height: 1.72;
+        margin: 0;
+        max-width: 70ch;
+    }
+
+    .w-link {
+        align-items: center;
+        color: var(--dim);
+        display: flex;
+        font-size: 0.72rem;
+        gap: 6px;
+        margin: -2px 0 0;
+    }
+
+    .w .tags {
+        margin-top: 2px;
+    }
+
+    @media (max-width: 620px) {
+        .w {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 12px;
+        }
+    }
+</style>

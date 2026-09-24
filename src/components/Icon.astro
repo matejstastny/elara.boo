@@ -1,0 +1,36 @@
+---
+import { icons, moons, type IconName, type MoonName } from "../data/icons";
+
+interface Props {
+    name?: IconName;
+    moon?: MoonName;
+    size?: number;
+    stroke?: number;
+    class?: string;
+    /* anything else lands on the <svg>, which is how Astro's scope attribute
+       reaches it - without this, scoped styles targeting an icon never match */
+    [key: string]: unknown;
+}
+
+const { name, moon, size = 20, stroke = 1.4, class: klass, ...rest } = Astro.props;
+const glyph = moon ? { d: moons[moon], fill: moon === "sparkle" } : name ? icons[name] : undefined;
+const filled = glyph && "fill" in glyph && glyph.fill;
+---
+
+{glyph && (
+    <svg
+        aria-hidden="true"
+        class={klass}
+        fill={filled ? "currentColor" : "none"}
+        focusable="false"
+        height={size}
+        stroke={filled ? "none" : "currentColor"}
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width={stroke}
+        viewBox="0 0 24 24"
+        width={size}
+        {...rest}
+        set:html={glyph.d}
+    />
+)}

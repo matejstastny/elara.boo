@@ -1,0 +1,506 @@
+---
+import Icon from "./Icon.astro";
+
+interface Shot {
+    src: string;
+    srcset: string;
+    alt: string;
+    caption: string;
+}
+
+interface Props {
+    shots: readonly Shot[];
+    /** rendered width the browser should plan for */
+    sizes?: string;
+}
+
+const { shots, sizes = "(max-width: 900px) 88vw, 620px" } = Astro.props;
+const many = shots.length > 1;
+
+/** the widest candidate in the srcset, for the lightbox */
+const fullSize = (srcset: string) => srcset.split(",").pop()!.trim().split(/\s+/)[0];
+---
+
+<figure class="gal" data-gallery>
+    <div class="gal-frame">
+        <ul class="gal-track" tabindex={many ? 0 : undefined}>
+            {shots.map((shot, i) => (
+                <li class="gal-slide">
+                    {/* disabled until the script enables it, so it is never a dead control */}
+                    <button
+                        class="gal-open"
+                        type="button"
+                        disabled
+                        data-gal-open
+                        data-full={fullSize(shot.srcset)}
+                        data-caption={shot.caption}
+                        aria-label={`Open image ${i + 1} of ${shots.length} full size`}
+                    >
+                        <img
+                            alt={shot.alt}
+                            decoding="async"
+                            height="875"
+                            loading="lazy"
+                            sizes={sizes}
+                            src={shot.src}
+                            srcset={shot.srcset}
+                            width="1400"
+                        />
+                    </button>
+                    <span class="gal-cap">{shot.caption}</span>
+                </li>
+            ))}
+        </ul>
+
+        {many && (
+            <>
+                <button
+                    class="gal-nav gal-nav--prev"
+                    type="button"
+                    data-gal-prev
+                    aria-label="Previous image"
+                >
+                    <Icon name="chevron" size={18} stroke={2} />
+                </button>
+                <button
+                    class="gal-nav gal-nav--next"
+                    type="button"
+                    data-gal-next
+                    aria-label="Next image"
+                >
+                    <Icon name="chevron" size={18} stroke={2} />
+                </button>
+                <p class="gal-count" aria-hidden="true">
+                    <span data-gal-index>1</span>/{shots.length}
+                </p>
+            </>
+        )}
+    </div>
+
+    <dialog class="lb" data-gal-lb aria-label="Image viewer">
+        <div class="lb-inner">
+            <img class="lb-img" data-gal-lb-img alt="" />
+            <p class="lb-cap" data-gal-lb-cap></p>
+        </div>
+        <button class="lb-close" type="button" data-gal-close aria-label="Close image viewer">
+            <Icon name="close" size={18} stroke={1.9} />
+        </button>
+        {many && (
+            <>
+                <button
+                    class="lb-nav lb-nav--prev"
+                    type="button"
+                    data-gal-lb-prev
+                    aria-label="Previous image"
+                >
+                    <Icon name="chevron" size={20} stroke={2} />
+                </button>
+                <button
+                    class="lb-nav lb-nav--next"
+                    type="button"
+                    data-gal-lb-next
+                    aria-label="Next image"
+                >
+                    <Icon name="chevron" size={20} stroke={2} />
+                </button>
+            </>
+        )}
+    </dialog>
+</figure>
+
+<style>
+    .gal {
+        margin: 6px 0 0;
+        max-width: 620px;
+    }
+
+    .gal-frame {
+        position: relative;
+    }
+
+    /* a real scroll container, so it swipes on touch and still works with no JS */
+    .gal-track {
+        border: 1px solid var(--overlay);
+        border-radius: 4px;
+        display: flex;
+        list-style: none;
+        margin: 0;
+        overflow-x: auto;
+        padding: 0;
+        scroll-behavior: smooth;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+    }
+
+    .gal-track::-webkit-scrollbar {
+        display: none;
+    }
+
+    .gal-track:focus-visible {
+        outline: 2px solid var(--rose);
+        outline-offset: 3px;
+    }
+
+    .gal-slide {
+        display: grid;
+        flex: 0 0 100%;
+        scroll-snap-align: start;
+    }
+
+    .gal-open {
+        background: none;
+        border: 0;
+        display: block;
+        padding: 0;
+        width: 100%;
+    }
+
+    .gal-open:enabled {
+        cursor: zoom-in;
+    }
+
+    .gal-open img {
+        display: block;
+        height: auto;
+        transition: opacity 180ms ease;
+        width: 100%;
+    }
+
+    .gal-open:enabled:hover img {
+        opacity: 0.86;
+    }
+
+    .gal-open:focus-visible {
+        outline: 2px solid var(--rose);
+        outline-offset: -4px;
+    }
+
+    /* caption travels with its own slide, so it cannot fall out of sync */
+    .gal-cap {
+        border-top: 1px solid var(--overlay);
+        color: var(--dim);
+        font-size: 0.64rem;
+        letter-spacing: 0.05em;
+        line-height: 1.5;
+        padding: 9px 12px;
+    }
+
+    /* ---------- arrows, sitting on the image ---------- */
+
+    .gal-nav {
+        align-items: center;
+        background: color-mix(in srgb, var(--base) 72%, transparent);
+        backdrop-filter: blur(6px);
+        border: 1px solid color-mix(in srgb, var(--bright) 22%, transparent);
+        border-radius: 50%;
+        color: var(--bright);
+        cursor: pointer;
+        display: flex;
+        height: 34px;
+        justify-content: center;
+        padding: 0;
+        position: absolute;
+        /* nudged up to sit on the middle of the image, not the caption */
+        top: calc(50% - 20px);
+        transform: translateY(-50%);
+        transition:
+            background-color 180ms ease,
+            border-color 180ms ease,
+            opacity 180ms ease;
+        width: 34px;
+        z-index: 2;
+    }
+
+    .gal-nav:hover {
+        background: color-mix(in srgb, var(--rose) 82%, var(--base));
+        border-color: var(--rose);
+        color: var(--base);
+    }
+
+    .gal-nav[disabled] {
+        cursor: default;
+        opacity: 0.25;
+    }
+
+    .gal-nav--prev {
+        left: 10px;
+    }
+
+    .gal-nav--next {
+        right: 10px;
+    }
+
+    /* one chevron asset, turned to point each way */
+    .gal-nav--prev :global(svg),
+    .lb-nav--prev :global(svg) {
+        transform: rotate(90deg);
+    }
+
+    .gal-nav--next :global(svg),
+    .lb-nav--next :global(svg) {
+        transform: rotate(-90deg);
+    }
+
+    .gal-count {
+        background: color-mix(in srgb, var(--base) 72%, transparent);
+        backdrop-filter: blur(6px);
+        border: 1px solid color-mix(in srgb, var(--bright) 18%, transparent);
+        border-radius: 999px;
+        color: var(--text);
+        font-size: 0.6rem;
+        letter-spacing: 0.1em;
+        margin: 0;
+        padding: 3px 9px;
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        z-index: 2;
+    }
+
+    /* ---------- lightbox ---------- */
+
+    .lb {
+        background: transparent;
+        border: 0;
+        height: 100dvh;
+        max-height: 100dvh;
+        max-width: 100vw;
+        overflow: hidden;
+        padding: 0;
+        width: 100vw;
+    }
+
+    .lb[open] {
+        align-items: center;
+        display: flex;
+        justify-content: center;
+    }
+
+    .lb::backdrop {
+        backdrop-filter: blur(14px);
+        background: color-mix(in srgb, #11111b 74%, transparent);
+    }
+
+    .lb-inner {
+        display: grid;
+        gap: 14px;
+        justify-items: center;
+        max-width: 90vw;
+    }
+
+    .lb-img {
+        border: 1px solid var(--overlay);
+        border-radius: 4px;
+        display: block;
+        max-height: 82dvh;
+        max-width: 90vw;
+        object-fit: contain;
+    }
+
+    .lb-cap {
+        color: var(--dim);
+        font-size: 0.7rem;
+        letter-spacing: 0.05em;
+        margin: 0;
+        max-width: 70ch;
+        text-align: center;
+    }
+
+    .lb-close,
+    .lb-nav {
+        align-items: center;
+        background: color-mix(in srgb, var(--surface) 82%, transparent);
+        backdrop-filter: blur(6px);
+        border: 1px solid color-mix(in srgb, var(--bright) 20%, transparent);
+        border-radius: 50%;
+        color: var(--text);
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        padding: 0;
+        position: fixed;
+        transition:
+            background-color 180ms ease,
+            border-color 180ms ease,
+            color 180ms ease,
+            opacity 180ms ease;
+    }
+
+    .lb-close:hover,
+    .lb-nav:hover {
+        background: color-mix(in srgb, var(--rose) 82%, var(--base));
+        border-color: var(--rose);
+        color: var(--base);
+    }
+
+    .lb-close {
+        height: 40px;
+        right: clamp(14px, 3vw, 28px);
+        top: clamp(14px, 3vw, 28px);
+        width: 40px;
+    }
+
+    .lb-nav {
+        height: 40px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 40px;
+    }
+
+    .lb-nav[disabled] {
+        cursor: default;
+        opacity: 0.22;
+    }
+
+    .lb-nav--prev {
+        left: clamp(10px, 2.5vw, 26px);
+    }
+
+    .lb-nav--next {
+        right: clamp(10px, 2.5vw, 26px);
+    }
+
+    @media (max-width: 560px) {
+        .gal-nav {
+            height: 30px;
+            width: 30px;
+        }
+
+        .gal-nav--prev {
+            left: 7px;
+        }
+
+        .gal-nav--next {
+            right: 7px;
+        }
+
+        .lb-nav {
+            top: auto;
+            bottom: 18px;
+            transform: none;
+        }
+    }
+
+    /* smooth scrolling is the one bit of motion here worth dropping */
+    @media (prefers-reduced-motion: reduce) {
+        .gal-track {
+            scroll-behavior: auto;
+        }
+    }
+</style>
+
+<script>
+    // The arrows drive the scroll container rather than replacing it, so touch
+    // swiping and keyboard scrolling keep working and the arrows just follow.
+    // Full-size viewing uses a native <dialog>, which brings Esc, the backdrop
+    // and focus trapping with it.
+    document.querySelectorAll<HTMLElement>("[data-gallery]").forEach((gal) => {
+        const track = gal.querySelector<HTMLElement>(".gal-track");
+        const openers = [...gal.querySelectorAll<HTMLButtonElement>("[data-gal-open]")];
+        const lb = gal.querySelector<HTMLDialogElement>("[data-gal-lb]");
+        const lbImg = gal.querySelector<HTMLImageElement>("[data-gal-lb-img]");
+        const lbCap = gal.querySelector<HTMLElement>("[data-gal-lb-cap]");
+        if (!track || !lb || !lbImg || !lbCap) return;
+
+        const count = openers.length;
+        const current = () => Math.round(track.scrollLeft / track.clientWidth);
+
+        /* ---------- the strip ---------- */
+
+        const prev = gal.querySelector<HTMLButtonElement>("[data-gal-prev]");
+        const next = gal.querySelector<HTMLButtonElement>("[data-gal-next]");
+        const index = gal.querySelector<HTMLElement>("[data-gal-index]");
+
+        const sync = () => {
+            const i = current();
+            if (index) index.textContent = String(i + 1);
+            if (prev) prev.disabled = i <= 0;
+            if (next) next.disabled = i >= count - 1;
+        };
+
+        const go = (delta: number) => {
+            const target = Math.min(Math.max(current() + delta, 0), count - 1);
+            track.scrollTo({ left: target * track.clientWidth });
+        };
+
+        prev?.addEventListener("click", () => go(-1));
+        next?.addEventListener("click", () => go(1));
+        track.addEventListener("scroll", sync, { passive: true });
+        addEventListener("resize", sync, { passive: true });
+
+        track.addEventListener("keydown", (event) => {
+            if (event.key === "ArrowLeft") {
+                event.preventDefault();
+                go(-1);
+            } else if (event.key === "ArrowRight") {
+                event.preventDefault();
+                go(1);
+            }
+        });
+
+        /* ---------- full size ---------- */
+
+        const lbPrev = gal.querySelector<HTMLButtonElement>("[data-gal-lb-prev]");
+        const lbNext = gal.querySelector<HTMLButtonElement>("[data-gal-lb-next]");
+        let shown = 0;
+
+        const show = (i: number) => {
+            shown = Math.min(Math.max(i, 0), count - 1);
+            const opener = openers[shown];
+            const img = opener.querySelector("img");
+            lbImg.src = opener.dataset.full ?? "";
+            lbImg.alt = img?.alt ?? "";
+            lbCap.textContent = opener.dataset.caption ?? "";
+            if (lbPrev) lbPrev.disabled = shown <= 0;
+            if (lbNext) lbNext.disabled = shown >= count - 1;
+        };
+
+        const open = (i: number) => {
+            show(i);
+            lb.showModal();
+        };
+
+        // put the strip and the focus ring back where the viewer left off. the
+        // close event covers Esc; the explicit paths call it directly so they do
+        // not depend on that event firing.
+        const settle = () => {
+            track.scrollTo({ left: shown * track.clientWidth });
+            openers[shown]?.focus();
+        };
+
+        const dismiss = () => {
+            lb.close();
+            settle();
+        };
+
+        openers.forEach((opener, i) => {
+            opener.disabled = false;
+            opener.addEventListener("click", () => open(i));
+        });
+
+        lbPrev?.addEventListener("click", () => show(shown - 1));
+        lbNext?.addEventListener("click", () => show(shown + 1));
+
+        gal.querySelector("[data-gal-close]")?.addEventListener("click", dismiss);
+
+        // clicks that land on the dialog itself are backdrop clicks
+        lb.addEventListener("click", (event) => {
+            if (event.target === lb) dismiss();
+        });
+
+        lb.addEventListener("keydown", (event) => {
+            if (event.key === "ArrowLeft") {
+                event.preventDefault();
+                show(shown - 1);
+            } else if (event.key === "ArrowRight") {
+                event.preventDefault();
+                show(shown + 1);
+            }
+        });
+
+        // the route Esc takes
+        lb.addEventListener("close", settle);
+
+        sync();
+    });
+</script>

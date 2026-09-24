@@ -1,306 +1,495 @@
 ---
-import { site } from "../data/site";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import ContactRow from "../components/ContactRow.astro";
+import Icon from "../components/Icon.astro";
+import NameMark from "../components/NameMark.astro";
+import Projects from "../components/Projects.astro";
+import TechStrip from "../components/TechStrip.astro";
+import Trickfire from "../components/Trickfire.astro";
+import { education, footer, hero, identity, linux, name } from "../data/site";
+
+const built = new Date().toISOString().slice(0, 10);
 ---
 
-<BaseLayout description={site.description} title={`${site.name} · elara.boo`}>
-    <main>
-        <div class="sky" aria-hidden="true">
-            <span class="star star-one"></span>
-            <span class="star star-two"></span>
-            <span class="star star-three"></span>
-            <span class="orbit"></span>
-        </div>
-        <div class="frame">
-            <header class="masthead">
-                <a class="wordmark" href="/" aria-label="elara.boo home">
-                    ✦ elara.boo
-                </a>
-                <p>midnight with stars</p>
-            </header>
-            <section class="intro" aria-labelledby="title">
-                <p class="eyebrow">hello, I’m</p>
-                <h1 id="title">{site.name}</h1>
-                <p class="lede">
-                    I make software, build robots, and care far too much about the little systems
-                    around a computer.
+<BaseLayout>
+    <a class="skip" href="#robotics">
+        Skip to content
+    </a>
+
+    <!-- ---------- the whole first screen ---------- -->
+    <section class="cover" id="top">
+        <div class="shell cover-inner">
+            <div class="cover-name">
+                <NameMark />
+                <p class="cover-role">
+                    {hero.lines.map((line) => (
+                        <span>{line}</span>
+                    ))}
                 </p>
-            </section>
-            <section class="directory" aria-labelledby="directory-title">
-                <div class="section-heading">
-                    <h2 id="directory-title">around here</h2>
-                    <span aria-hidden="true">↗</span>
-                </div>
-                <ul>
-                    {site.links.map((link, index) => (
+            </div>
+
+            <p class="cover-blurb">{hero.blurb}</p>
+
+            <ContactRow />
+
+            <TechStrip />
+        </div>
+
+        <a class="cue" href="#robotics">
+            <span class="cue-label">scroll</span>
+            <span class="cue-track" aria-hidden="true"></span>
+            <span class="cue-dial" aria-hidden="true">
+                <Icon class="cue-chevron" name="chevron" size={20} stroke={2} />
+            </span>
+        </a>
+    </section>
+
+    <main>
+        <!-- ---------- trickfire ---------- -->
+        <section class="shell band" id="robotics">
+            <h2 class="label">robotics</h2>
+            <div class="band-body">
+                <Trickfire />
+            </div>
+        </section>
+
+        <!-- ---------- personal projects ---------- -->
+        <section class="shell band" id="projects">
+            <h2 class="label">projects</h2>
+            <div class="band-body">
+                <p class="prose section-lede">
+                    Things that did not exist the way I wanted them to, so I wrote them. Some are
+                    finished, some are still arguments I am having with myself.
+                </p>
+                <Projects />
+            </div>
+        </section>
+
+        <!-- ---------- linux & open source ---------- -->
+        <section class="shell band" id="linux">
+            <h2 class="label">linux</h2>
+            <div class="band-body">
+                <p class="prose">{linux.blurb}</p>
+
+                <ul class="lx-links">
+                    {linux.links.map((l) => (
                         <li>
-                            <a href={link.href} target="_blank" rel="noreferrer">
-                                <span class="link-index">{String(index + 1).padStart(2, "0")}</span>
-                                <span class="link-copy">
-                                    <strong>{link.label}</strong>
-                                    <span>{link.detail}</span>
-                                </span>
-                                <span class="link-arrow" aria-hidden="true">
-                                    ↗
-                                </span>
+                            <a href={l.href} rel="noreferrer" target="_blank">
+                                <span class="lx-label">{l.label}</span>
+                                <span class="lx-detail">{l.detail}</span>
+                                <Icon class="lx-arrow" name="arrow" size={12} stroke={1.6} />
                             </a>
                         </li>
                     ))}
                 </ul>
-            </section>
-            <footer>
-                <span>made somewhere under jupiter</span>
-                <span aria-hidden="true">✦</span>
-            </footer>
-        </div>
+
+                <figure class="shot">
+                    <img
+                        alt={linux.alt}
+                        decoding="async"
+                        height="1664"
+                        loading="lazy"
+                        sizes="(max-width: 900px) 92vw, 760px"
+                        src="/img/desktop-1100.webp"
+                        srcset="/img/desktop-760.webp 760w, /img/desktop-1100.webp 1100w, /img/desktop-1600.webp 1600w"
+                        width="2560"
+                    />
+                    <figcaption>{linux.caption}</figcaption>
+                </figure>
+            </div>
+        </section>
+
+        <!-- ---------- school ---------- -->
+        <section class="shell band" id="school">
+            <h2 class="label">school</h2>
+            <div class="band-body">
+                <div class="sch-head">
+                    <h3 class="sch-title">{education.degree}</h3>
+                    <p class="sch-sub">
+                        {education.school} &middot; <span class="dimmed">{education.window}</span>
+                    </p>
+                </div>
+                <ul class="facts sch-facts">
+                    {education.facts.map(([k, v]) => (
+                        <li>
+                            <span class="k">{k}</span>
+                            <span class="v">{v}</span>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        </section>
+
+        <!-- ---------- elara ---------- -->
+        <section class="shell band" id="elara">
+            <h2 class="label">elara</h2>
+            <div class="band-body">
+                <p class="elara-line">
+                    <Icon class="elara-glyph" moon="sparkle" size={14} />
+                    <span>{identity.domain}</span>
+                </p>
+                <p class="prose">{name.body}</p>
+            </div>
+        </section>
     </main>
+
+    <footer class="shell foot">
+        <p>
+            <span>built {built}</span>
+            <span aria-hidden="true">&middot;</span>
+            <a class="tlink" href={footer.source} rel="noreferrer" target="_blank">
+                source
+            </a>
+        </p>
+    </footer>
+
+    <a class="totop" href="#top" aria-label="Back to top">
+        <Icon name="up" size={15} stroke={1.7} />
+    </a>
+
+    <script is:inline>
+        (() => {
+            const btn = document.querySelector(".totop");
+            if (!btn) return;
+            const sync = () =>
+                btn.classList.toggle("is-on", window.scrollY > window.innerHeight * 0.6);
+            addEventListener("scroll", sync, { passive: true });
+            sync();
+        })();
+    </script>
 </BaseLayout>
+
 <style>
-    main {
-        isolation: isolate;
-        min-height: 100vh;
+    .skip {
+        background: var(--surface);
+        border-radius: 3px;
+        color: var(--bright);
+        font-size: 0.72rem;
+        left: 10px;
+        padding: 9px 14px;
+        position: absolute;
+        top: -100px;
+        transition: top 140ms ease;
+        z-index: 20;
+    }
+
+    .skip:focus {
+        top: 10px;
+    }
+
+    /* ---------- cover ---------- */
+
+    .cover {
+        display: grid;
+        grid-template-rows: 1fr auto;
+        min-height: 100svh;
+        padding-block: clamp(40px, 7vh, 76px) 0;
+    }
+
+    .cover-inner {
+        align-content: center;
+        display: grid;
+        gap: clamp(22px, 3.4vh, 40px);
+        width: 100%;
+    }
+
+    .cover-name {
+        display: grid;
+        gap: clamp(12px, 2vh, 22px);
+    }
+
+    .cover-role {
+        color: var(--text);
+        display: grid;
+        font-size: clamp(0.78rem, 0.72rem + 0.24vw, 0.92rem);
+        gap: 2px;
+        letter-spacing: -0.01em;
+        margin: 0;
+    }
+
+    .cover-role span:last-child {
+        color: var(--dim);
+        font-size: 0.92em;
+    }
+
+    .cover-blurb {
+        color: var(--dim);
+        font-size: clamp(0.8rem, 0.74rem + 0.26vw, 0.95rem);
+        line-height: 1.7;
+        margin: 0;
+        max-width: 56ch;
+    }
+
+    /* ---------- scroll cue ---------- */
+
+    .cue {
+        align-items: center;
+        align-self: center;
+        color: var(--dim);
+        display: flex;
+        flex-direction: column;
+        font-size: 0.66rem;
+        gap: 10px;
+        justify-self: center;
+        letter-spacing: 0.2em;
+        padding: clamp(18px, 3.5vh, 34px) 24px clamp(14px, 2.5vh, 26px);
+        text-decoration: none;
+        transition: color 220ms ease;
+    }
+
+    .cue:hover,
+    .cue:focus-visible {
+        color: var(--rose);
+    }
+
+    /* a hairline with a rose marker falling down it */
+    .cue-track {
+        background: linear-gradient(color-mix(in srgb, currentcolor 45%, transparent), transparent);
+        border-radius: 2px;
+        height: 30px;
         overflow: hidden;
         position: relative;
-    }
-    .sky,
-    .sky::before,
-    .sky::after {
-        inset: 0;
-        pointer-events: none;
-        position: absolute;
-    }
-    .sky {
-        background:
-            radial-gradient(circle at 79% 14%, rgb(120 120 200 / 13%), transparent 22rem),
-            radial-gradient(circle at 11% 91%, rgb(196 122 184 / 7%), transparent 24rem), #11111b;
-        z-index: -1;
-    }
-    .sky::before {
-        background-image: radial-gradient(#dce0f4 0.6px, transparent 0.8px);
-        background-position: 23px 41px;
-        background-size: 148px 148px;
-        content: "";
-        opacity: 0.26;
-    }
-    .sky::after {
-        background-image: radial-gradient(#7878c8 0.5px, transparent 0.8px);
-        background-position: 97px 12px;
-        background-size: 211px 211px;
-        content: "";
-        opacity: 0.28;
-    }
-    .star,
-    .orbit {
-        position: absolute;
-    }
-    .star {
-        background: #f0f0ff;
-        border-radius: 100%;
-        box-shadow: 0 0 18px 4px rgb(220 224 244 / 20%);
-        height: 3px;
-        width: 3px;
-    }
-    .star-one {
-        left: 13%;
-        top: 17%;
-    }
-    .star-two {
-        background: #c47ab8;
-        bottom: 15%;
-        height: 2px;
-        right: 12%;
         width: 2px;
     }
-    .star-three {
-        background: #7878c8;
-        height: 4px;
-        right: 28%;
-        top: 33%;
-        width: 4px;
+
+    .cue-track::after {
+        animation: fall 1.9s cubic-bezier(0.55, 0, 0.4, 1) infinite;
+        background: var(--rose);
+        border-radius: 2px;
+        content: "";
+        height: 14px;
+        left: 0;
+        position: absolute;
+        top: -14px;
+        width: 2px;
     }
-    .orbit {
-        border: 1px solid rgb(120 120 200 / 13%);
+
+    /* the target itself, same shape as the back-to-top button */
+    .cue-dial {
+        align-items: center;
+        animation: nod 1.9s ease-in-out infinite;
+        border: 1px solid var(--overlay);
         border-radius: 50%;
-        height: min(82vw, 920px);
-        right: -36vw;
-        top: -38vw;
-        transform: rotate(-25deg);
-        width: min(82vw, 920px);
-    }
-    .frame {
-        display: grid;
-        grid-template-columns: minmax(0, 0.94fr) minmax(360px, 0.76fr);
-        grid-template-rows: auto 1fr auto;
-        margin: 0 auto;
-        max-width: 1280px;
-        min-height: 100vh;
-        padding: 28px clamp(24px, 6vw, 76px) 24px;
-    }
-    .masthead {
-        align-items: center;
-        border-bottom: 1px solid #25253a;
         display: flex;
-        grid-column: 1 / -1;
-        justify-content: space-between;
-        padding-bottom: 20px;
+        height: 40px;
+        justify-content: center;
+        transition:
+            border-color 220ms ease,
+            background-color 220ms ease;
+        width: 40px;
     }
-    .wordmark {
-        color: #7878c8;
-        font-size: 0.86rem;
-        font-weight: 650;
-        letter-spacing: 0.09em;
-        text-decoration: none;
+
+    .cue:hover .cue-dial,
+    .cue:focus-visible .cue-dial {
+        background: color-mix(in srgb, var(--rose) 10%, transparent);
+        border-color: color-mix(in srgb, var(--rose) 60%, var(--overlay));
     }
-    .masthead p,
-    .eyebrow,
-    footer,
-    .section-heading {
-        color: #9898c0;
-        font-size: 0.69rem;
-        letter-spacing: 0.12em;
-        text-transform: lowercase;
+
+    @keyframes fall {
+        0% {
+            top: -14px;
+        }
+        55%,
+        100% {
+            top: 30px;
+        }
     }
-    .masthead p {
-        margin: 0;
+
+    @keyframes nod {
+        0%,
+        45%,
+        100% {
+            transform: translateY(0);
+        }
+        68% {
+            transform: translateY(6px);
+        }
     }
-    .intro {
-        align-self: center;
-        max-width: 590px;
-        padding: clamp(84px, 17vh, 172px) clamp(32px, 8vw, 120px) clamp(84px, 13vh, 128px) 0;
+
+    /* with motion off the marker cannot fall, so leave the track drawn instead */
+    @media (prefers-reduced-motion: reduce) {
+        .cue-track {
+            background: linear-gradient(currentcolor, transparent);
+        }
+
+        .cue-track::after {
+            content: none;
+        }
     }
-    .eyebrow {
-        color: #c47ab8;
-        margin: 0 0 14px;
-    }
-    h1 {
-        color: #f0f0ff;
-        font-size: clamp(2.65rem, 6.6vw, 6.35rem);
-        font-weight: 500;
-        letter-spacing: -0.095em;
-        line-height: 0.92;
-        margin: 0;
-    }
-    .lede {
-        color: #dce0f4;
-        font-size: clamp(0.95rem, 1.4vw, 1.12rem);
-        letter-spacing: -0.035em;
-        line-height: 1.7;
-        margin: 34px 0 0;
-        max-width: 39ch;
-    }
-    .directory {
-        align-self: center;
-        border-left: 1px solid #25253a;
-        padding: clamp(48px, 9vw, 110px) 0 clamp(48px, 9vw, 110px) clamp(32px, 6vw, 84px);
-    }
-    .section-heading {
-        align-items: center;
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 12px;
-    }
-    h2 {
-        font: inherit;
-        margin: 0;
-    }
-    ul {
-        border-top: 1px solid #25253a;
+
+    /* ---------- linux links ---------- */
+
+    .lx-links {
+        border-top: var(--rule);
         list-style: none;
         margin: 0;
+        max-width: 640px;
         padding: 0;
     }
-    li {
-        border-bottom: 1px solid #25253a;
+
+    .lx-links li {
+        border-bottom: var(--rule);
     }
-    li a {
-        align-items: center;
+
+    .lx-links a {
+        align-items: baseline;
+        color: var(--text);
         display: grid;
-        gap: 16px;
-        grid-template-columns: 2.5rem 1fr auto;
-        min-height: 94px;
-        padding: 16px 0;
+        gap: 4px 16px;
+        grid-template-columns: minmax(0, 12rem) minmax(0, 1fr) 12px;
+        padding: 12px 0;
         text-decoration: none;
-        transition: padding 180ms cubic-bezier(0.05, 0.7, 0.1, 1);
+        transition: padding-left 220ms cubic-bezier(0.05, 0.7, 0.1, 1);
     }
-    li a:hover {
-        padding-left: 10px;
+
+    .lx-links a:hover {
+        padding-left: 9px;
     }
-    li a:hover strong,
-    li a:focus-visible strong {
-        color: #c47ab8;
+
+    .lx-label {
+        font-size: 0.78rem;
     }
-    .link-index,
-    .link-arrow {
-        color: #7878c8;
-        font-size: 0.72rem;
+
+    .lx-links a:hover .lx-label {
+        color: var(--rose);
     }
-    .link-copy {
-        display: grid;
-        gap: 5px;
+
+    .lx-detail {
+        color: var(--dim);
+        font-size: 0.7rem;
     }
-    strong {
-        color: #dce0f4;
-        font-size: 0.91rem;
-        font-weight: 500;
+
+    .lx-arrow {
+        color: var(--muted);
+        transition:
+            color 180ms ease,
+            transform 220ms cubic-bezier(0.05, 0.7, 0.1, 1);
+    }
+
+    .lx-links a:hover .lx-arrow {
+        color: var(--rose);
+        transform: translate(2px, -2px);
+    }
+
+    /* ---------- screenshot ---------- */
+
+    .shot {
+        margin: 0;
+        max-width: 800px;
+    }
+
+    .shot img {
+        border: 1px solid var(--overlay);
+        border-radius: 4px;
+        display: block;
+        height: auto;
+        width: 100%;
+    }
+
+    .shot figcaption {
+        color: var(--dim);
+        font-size: 0.64rem;
+        letter-spacing: 0.06em;
+        padding-top: 11px;
+    }
+
+    /* ---------- school ---------- */
+
+    .sch-title {
+        color: var(--bright);
+        font-size: 1.05rem;
+        font-weight: 600;
         letter-spacing: -0.025em;
-        transition: color 180ms ease;
+        margin: 0;
     }
-    .link-copy span {
-        color: #9898c0;
-        font-size: 0.72rem;
-        letter-spacing: -0.025em;
-        line-height: 1.45;
+
+    .sch-sub {
+        color: var(--text);
+        font-size: 0.74rem;
+        margin: 4px 0 0;
     }
-    footer {
-        align-items: end;
-        border-top: 1px solid #25253a;
+
+    .sch-facts {
+        max-width: 52ch;
+    }
+
+    /* ---------- the name ---------- */
+
+    .elara-line {
+        align-items: center;
+        color: var(--purple);
         display: flex;
-        grid-column: 1 / -1;
-        justify-content: space-between;
-        padding-top: 20px;
+        font-size: 0.86rem;
+        font-weight: 600;
+        gap: 9px;
+        letter-spacing: 0.02em;
+        margin: 0;
     }
-    footer span:last-child {
-        color: #c47ab8;
-        font-size: 0.9rem;
+
+    .elara-glyph {
+        flex: none;
     }
-    @media (max-width: 720px) {
-        .frame {
-            display: flex;
-            flex-direction: column;
-            padding: 22px 24px;
-        }
-        .masthead {
-            flex: 0 0 auto;
-            padding-bottom: 17px;
-        }
-        .masthead p {
-            display: none;
-        }
-        .intro {
-            flex: 1;
-            padding: 84px 0 74px;
-        }
-        .directory {
-            border-left: 0;
-            border-top: 1px solid #25253a;
-            padding: 25px 0 60px;
-        }
-        li a {
-            min-height: 82px;
-        }
-        .orbit {
-            height: 700px;
-            right: -430px;
-            top: -240px;
-            width: 700px;
-        }
+
+    /* ---------- footer ---------- */
+
+    .foot {
+        border-top: var(--rule);
+        padding-block: clamp(28px, 4vw, 44px) clamp(34px, 5vw, 60px);
     }
-    @media (prefers-reduced-motion: reduce) {
-        *,
-        *::before,
-        *::after {
-            scroll-behavior: auto !important;
-            transition-duration: 0.01ms !important;
+
+    .foot p {
+        color: color-mix(in srgb, var(--dim) 78%, var(--base));
+        display: flex;
+        font-size: 0.64rem;
+        gap: 9px;
+        letter-spacing: 0.08em;
+        margin: 0;
+    }
+
+    /* ---------- back to top ---------- */
+
+    .totop {
+        align-items: center;
+        background: color-mix(in srgb, var(--surface) 88%, transparent);
+        backdrop-filter: blur(8px);
+        border: 1px solid var(--overlay);
+        border-radius: 50%;
+        bottom: clamp(18px, 3vw, 30px);
+        color: var(--dim);
+        display: flex;
+        height: 38px;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        position: fixed;
+        right: clamp(18px, 3vw, 30px);
+        transform: translateY(8px);
+        transition:
+            opacity 240ms ease,
+            transform 240ms ease,
+            color 180ms ease,
+            border-color 180ms ease;
+        width: 38px;
+        z-index: 15;
+    }
+
+    .totop.is-on {
+        opacity: 1;
+        pointer-events: auto;
+        transform: none;
+    }
+
+    .totop:hover {
+        border-color: color-mix(in srgb, var(--rose) 55%, var(--overlay));
+        color: var(--rose);
+    }
+
+    /* without the script the button never gets its class, so keep it reachable */
+    @media (scripting: none) {
+        .totop {
+            opacity: 1;
+            pointer-events: auto;
+            transform: none;
         }
     }
 </style>

@@ -1,62 +1,78 @@
 ---
+import "../styles/global.css";
+import { meta } from "../data/site";
+
 interface Props {
     description?: string;
     title?: string;
 }
-const {
-    description = "Software, robotics, and small systems with a point of view.",
-    title = "elara.boo",
-} = Astro.props;
+
+const { description = meta.description, title = meta.title } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? "https://elara.boo");
 ---
 
 <!doctype html>
 <html lang="en">
     <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width" />
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>{title}</title>
         <meta name="description" content={description} />
         <meta name="theme-color" content="#11111b" />
+        <meta name="color-scheme" content="dark" />
+        <link rel="canonical" href={canonical.href} />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="preload" as="font" type="font/woff2" href="/fonts/maple-600.woff2" crossorigin />
+        <link rel="preload" as="font" type="font/woff2" href="/fonts/maple-400.woff2" crossorigin />
+        <meta property="og:type" content="profile" />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
-        <meta property="og:type" content="website" />
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <title>{title}</title>
+        <meta property="og:url" content={canonical.href} />
+        <meta name="twitter:card" content="summary" />
     </head>
     <body>
+        <div class="backdrop" aria-hidden="true">
+            <span class="jupiter"></span>
+        </div>
         <slot />
     </body>
 </html>
-<style is:global>
-    :root {
-        color-scheme: dark;
-        font-family:
-            "Maple Mono NF", "Maple Mono", ui-monospace, "Cascadia Code", "SFMono-Regular", Menlo,
-            Consolas, monospace;
-        background: #11111b;
-        color: #dce0f4;
-        font-synthesis: none;
-        text-rendering: optimizeLegibility;
+
+<style>
+    /* a very faint star field and the limb of something large, off to one side */
+    .backdrop {
+        inset: 0;
+        pointer-events: none;
+        position: fixed;
+        z-index: -1;
     }
-    * {
-        box-sizing: border-box;
+
+    .backdrop::before {
+        background-image: radial-gradient(#dce0f4 0.6px, transparent 0.7px);
+        background-position: 21px 37px;
+        background-size: 154px 154px;
+        content: "";
+        inset: 0;
+        opacity: 0.15;
+        position: absolute;
     }
-    html {
-        min-width: 320px;
-        background: #11111b;
+
+    .backdrop::after {
+        background-image: radial-gradient(#7878c8 0.6px, transparent 0.8px);
+        background-position: 91px 11px;
+        background-size: 223px 223px;
+        content: "";
+        inset: 0;
+        opacity: 0.22;
+        position: absolute;
     }
-    body {
-        min-height: 100vh;
-        margin: 0;
-    }
-    ::selection {
-        background: #7878c8;
-        color: #11111b;
-    }
-    a {
-        color: inherit;
-    }
-    :focus-visible {
-        outline: 2px solid #c47ab8;
-        outline-offset: 4px;
+
+    .jupiter {
+        background:
+            radial-gradient(circle at 74% 10%, rgb(120 120 200 / 12%), transparent 26rem),
+            radial-gradient(circle at 6% 88%, rgb(196 122 184 / 6%), transparent 28rem);
+        inset: 0;
+        position: absolute;
     }
 </style>

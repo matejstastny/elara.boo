@@ -1,0 +1,169 @@
+---
+import Icon from "./Icon.astro";
+import { projects } from "../data/site";
+---
+
+<ol class="projects">
+    {projects.map((p) => (
+        <li class="proj">
+            <a class="proj-link" href={p.href} rel="noreferrer me" target="_blank">
+                <span class="proj-mark" aria-hidden="true">
+                    {"image" in p ? (
+                        <img
+                            alt=""
+                            class="proj-img"
+                            decoding="async"
+                            height="128"
+                            loading="lazy"
+                            src={p.image}
+                            width="128"
+                        />
+                    ) : (
+                        <Icon name={p.icon} size={19} stroke={1.35} />
+                    )}
+                </span>
+
+                <span class="proj-body">
+                    <span class="proj-title">
+                        <b>{p.name}</b>
+                        <span class="proj-tagline">{p.tagline}</span>
+                    </span>
+                    <span class="proj-text">{p.body}</span>
+                    <span class="tags proj-tags">
+                        {p.tags.map((t) => (
+                            <span class="tag">{t}</span>
+                        ))}
+                        <span class="tag tag--quiet">{p.status}</span>
+                    </span>
+                </span>
+
+                <Icon class="proj-arrow" name="arrow" size={13} stroke={1.6} />
+            </a>
+        </li>
+    ))}
+</ol>
+
+<style>
+    .projects {
+        border-top: var(--rule);
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .proj {
+        border-bottom: var(--rule);
+    }
+
+    .proj-link {
+        align-items: start;
+        display: grid;
+        gap: 0 clamp(14px, 2vw, 22px);
+        grid-template-columns: 34px minmax(0, 1fr) 13px;
+        padding: 20px 0 22px;
+        text-decoration: none;
+        transition: padding-left 220ms cubic-bezier(0.05, 0.7, 0.1, 1);
+    }
+
+    .proj-link:hover,
+    .proj-link:focus-visible {
+        padding-left: 10px;
+    }
+
+    /* one frame for every project, whether it has real art or a drawn icon */
+    .proj-mark {
+        align-items: center;
+        border: 1px solid var(--overlay);
+        border-radius: 3px;
+        color: var(--purple);
+        display: flex;
+        height: 32px;
+        justify-content: center;
+        overflow: hidden;
+        transition:
+            border-color 200ms ease,
+            color 200ms ease;
+        width: 32px;
+    }
+
+    .proj-link:hover .proj-mark {
+        border-color: color-mix(in srgb, var(--rose) 50%, var(--overlay));
+        color: var(--rose);
+    }
+
+    .proj-img {
+        display: block;
+        height: 24px;
+        object-fit: contain;
+        width: 24px;
+    }
+
+    .proj-body {
+        display: grid;
+        gap: 7px;
+        min-width: 0;
+    }
+
+    .proj-title {
+        align-items: baseline;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px 12px;
+    }
+
+    .proj-title b {
+        color: var(--bright);
+        font-size: 0.9rem;
+        font-weight: 600;
+        letter-spacing: -0.015em;
+        transition: color 180ms ease;
+    }
+
+    .proj-link:hover .proj-title b {
+        color: var(--rose);
+    }
+
+    .proj-tagline {
+        color: var(--dim);
+        font-size: 0.72rem;
+    }
+
+    .proj-text {
+        color: var(--text);
+        font-size: 0.76rem;
+        line-height: 1.7;
+        max-width: 70ch;
+    }
+
+    .proj-tags {
+        margin-top: 3px;
+    }
+
+    .tag--quiet {
+        border-style: dashed;
+        color: color-mix(in srgb, var(--dim) 78%, var(--base));
+    }
+
+    .proj-arrow {
+        color: var(--muted);
+        margin-top: 0.75em;
+        transition:
+            color 180ms ease,
+            transform 220ms cubic-bezier(0.05, 0.7, 0.1, 1);
+    }
+
+    .proj-link:hover .proj-arrow {
+        color: var(--rose);
+        transform: translate(2px, -2px);
+    }
+
+    @media (max-width: 620px) {
+        .proj-link {
+            grid-template-columns: 34px minmax(0, 1fr);
+        }
+
+        .proj-arrow {
+            display: none;
+        }
+    }
+</style>
